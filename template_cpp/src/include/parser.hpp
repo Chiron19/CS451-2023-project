@@ -127,6 +127,26 @@ public:
     return configPath_.c_str();
   }
 
+  int message_to_send, recv_em_id;
+
+  /*  Input path to config file,
+      return true if success
+  */
+  bool configPerfectLink(const std::string& config_path) {
+    std::ifstream config(config_path);
+
+    config.exceptions ( std::ifstream::failbit | std::ifstream::badbit );
+    try {
+      config >> message_to_send >> recv_em_id;
+    }
+    catch (const std::ifstream::failure& e) {
+      std::cerr << "Exception opening/reading/closing file\n";
+      return false;
+    }
+    
+    return true;
+  }
+
   std::vector<Host> hosts() {
     std::ifstream hostsFile(hostsPath());
     std::vector<Host> hosts;

@@ -1,11 +1,12 @@
 #include <chrono>
 #include <iostream>
 #include <thread>
+#include <signal.h>
 
 #include "parser.hpp"
 #include "hello.h"
-#include <signal.h>
-
+#include "udp.hpp"
+#include "perfectlink.hpp"
 
 static void stop(int) {
   // reset signal handlers to default
@@ -33,14 +34,17 @@ int main(int argc, char **argv) {
   Parser parser(argc, argv);
   parser.parse();
 
-  hello();
+  // hello();
   std::cout << std::endl;
 
-  std::cout << "My PID: " << getpid() << "\n";
+  int pid = getpid();
+  int em_id = static_cast<int> (parser.id());
+
+  std::cout << "My PID: " << pid << "\n";
   std::cout << "From a new terminal type `kill -SIGINT " << getpid() << "` or `kill -SIGTERM "
             << getpid() << "` to stop processing packets\n\n";
 
-  std::cout << "My ID: " << parser.id() << "\n\n";
+  std::cout << "My ID: " << em_id  << "\n\n";
 
   std::cout << "List of resolved hosts is:\n";
   std::cout << "==========================\n";
@@ -59,14 +63,30 @@ int main(int argc, char **argv) {
   std::cout << "===============\n";
   std::cout << parser.outputPath() << "\n\n";
 
+  const char* config_path = parser.configPath();
   std::cout << "Path to config:\n";
   std::cout << "===============\n";
-  std::cout << parser.configPath() << "\n\n";
+  std::cout << config_path << "\n\n";
+
+  std::cout << "Perfect Link:\n";
+  std::cout << "===============\n";
+  std::cout << "Configure result is " << parser.configPerfectLink(std::string(config_path)) << std::endl;
+  std::cout << "Numbers of messages for senders: " << parser.message_to_send << std::endl;
+  std::cout << "id of the receiver: " << parser.recv_em_id << std::endl;
 
   std::cout << "Doing some initialization...\n\n";
 
   std::cout << "Broadcasting and delivering messages...\n\n";
+  if (parser.recv_em_id == em_id) {
+    std::cout << "I am receiver.\n\n";
+    receiverPerfectLinks(em_id, parser);
+  }
+  else {
+    std::cout << "I am sender.\n\n";
+    senderPerfectLinks(em_id, parser);
+  }
 
+  std::cout << "Broadcast Finished, Sleep.\n\n";
   // After a process finishes broadcasting,
   // it waits forever for the delivery of messages.
   while (true) {
