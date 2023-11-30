@@ -10,13 +10,11 @@
 
 #include "parser.hpp"
 #include "udp.hpp"
-
-std::string format_time_point(const std::chrono::system_clock::time_point& tp);
-
-std::string format_duration(const std::chrono::system_clock::time_point& start, const std::chrono::system_clock::time_point& end);
+#include "uniformreliablebroadcast.hpp"
+#include "fifobroadcast.hpp"
 
 void receiverPerfectLinks(int em_id, Parser parser);
 
-void senderPerfectLinks(int em_id, Parser parser);
+void senderPerfectLinks(int src_em_id, int dst_em_id, Parser parser, std::string buffer);
 
 #endif

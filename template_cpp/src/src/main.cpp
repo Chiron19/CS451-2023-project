@@ -7,6 +7,9 @@
 #include "hello.h"
 #include "udp.hpp"
 #include "perfectlink.hpp"
+#include "uniformreliablebroadcast.hpp"
+#include "fifobroadcast.hpp"
+#include "multithread.hpp"
 
 static void stop(int) {
   // reset signal handlers to default
@@ -68,24 +71,36 @@ int main(int argc, char **argv) {
   std::cout << "===============\n";
   std::cout << config_path << "\n\n";
 
-  std::cout << "Perfect Link:\n";
-  std::cout << "===============\n";
-  std::cout << "Configure result is " << parser.configPerfectLink(std::string(config_path)) << std::endl;
-  std::cout << "Numbers of messages for senders: " << parser.message_to_send << std::endl;
-  std::cout << "id of the receiver: " << parser.recv_em_id << std::endl;
+  // std::cout << "Perfect Link:\n";
+  // std::cout << "===============\n";
+  // std::cout << "Configure result is " << (parser.configPerfectLink(std::string(config_path)) ? "SUCCESS" : "FAIL") << std::endl;
+  // std::cout << "Numbers of messages for senders: " << parser.message_to_send << std::endl;
+  // std::cout << "id of the receiver: " << parser.recv_em_id << std::endl;
 
-  std::cout << "Doing some initialization...\n\n";
+  std::cout << "Uniform Reliable Broadcast:\n";
+  std::cout << "===============\n";
+  std::cout << "Configure result is " << (parser.config_fifo(std::string(config_path)) ? "SUCCESS" : "FAIL") << std::endl;
+  std::cout << "Numbers of messages to broadcast: " << parser.message_to_send << std::endl;
+
+  std::cout << "Doing some initialization...\n";
+  init_fifo(em_id, parser);
+  std::cout << "fifo init done\n\n";
 
   std::cout << "Broadcasting and delivering messages...\n\n";
-  if (parser.recv_em_id == em_id) {
-    std::cout << "I am receiver.\n\n";
-    receiverPerfectLinks(em_id, parser);
-  }
-  else {
-    std::cout << "I am sender.\n\n";
-    senderPerfectLinks(em_id, parser);
-  }
 
+  // if (parser.recv_em_id == em_id) {
+  //   std::cout << "I am receiver.\n\n";
+  //   receiverPerfectLinks(em_id, parser);
+  // }
+  // else {
+  //   std::cout << "I am sender.\n\n";
+  //   for (int i = 1; i <= parser.message_to_send; i++)
+  //   {
+  //     senderPerfectLinks(em_id, parser.recv_em_id, parser, std::to_string(i));
+  //   }
+  // }
+  thread_run(em_id, parser);
+  
   std::cout << "Broadcast Finished, Sleep.\n\n";
   // After a process finishes broadcasting,
   // it waits forever for the delivery of messages.

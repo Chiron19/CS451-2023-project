@@ -16,8 +16,6 @@
 
 #define MAXLINE 10000
 
-typedef std::pair<int, std::string> message_t; // sender em_id + message
-
 class Udp {
 public:
     int em_id, send_fd, recv_fd;
@@ -32,12 +30,9 @@ public:
             // std::cout << addr.back().first << " " << addr.back().second << std::endl;
         }         
         // Initialization
-        if (parser.recv_em_id == em_id) {
-            setup_socket_udp(&recv_fd);
-        }
-        else {
-            setup_socket_udp(&send_fd);
-        }
+        setup_socket_udp(&recv_fd, 0);
+        setup_socket_udp(&send_fd, 1);
+        
     }
 
     /*
@@ -79,11 +74,7 @@ public:
 
 
         if (n < 0) {
-            if ((errno == EAGAIN) | (errno == EWOULDBLOCK)) {
-                // No data available to receive
-                return {-1, ""};
-            }
-            std::cout << "RECVFROM ERROR " << errno << std::endl;
+            std::cout << "RECVFROM ERROR " << errno << ": " << strerror(errno) << std::endl;
             return {-1, ""};
         }
         buffer[n] = '\0';
@@ -107,21 +98,23 @@ public:
     }
 
 private:
-    void setup_socket_udp(int* __fd) {
+    // type: 0 recv, 1 send
+    void setup_socket_udp(int* __fd, int type) {
         // SOCK_DGRAM for UDP socket       
         if ((*__fd = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
             printf("Socket creation failed...\n");
             exit(0);
         }
         
-        // socket configuration: outgoing/incoming at assigned port
+        // socket configuration: incoming at assigned port
         struct sockaddr_in servaddr;
         memset(&servaddr, 0, sizeof(servaddr));
         servaddr.sin_family = AF_INET; 
         servaddr.sin_addr.s_addr = INADDR_ANY;
         servaddr.sin_port = htons(addr[em_id].second);
 
-        // bind socket with sender/receiver's file descipter
+        if (type) return;
+        // bind socket with receiver's file descipter
         if (bind(*__fd, reinterpret_cast<const struct sockaddr *>(&servaddr), 
                 sizeof(servaddr)) < 0) {
             printf("Socket binding failed...\n");

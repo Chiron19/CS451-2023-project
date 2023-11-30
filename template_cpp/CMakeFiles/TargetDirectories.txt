@@ -1,5 +1,5 @@
-/mnt/c/Users/Admin/Documents/CS451-2023-project/template_cpp/CMakeFiles/edit_cache.dir
-/mnt/c/Users/Admin/Documents/CS451-2023-project/template_cpp/CMakeFiles/rebuild_cache.dir
-/mnt/c/Users/Admin/Documents/CS451-2023-project/template_cpp/src/CMakeFiles/da_proc.dir
-/mnt/c/Users/Admin/Documents/CS451-2023-project/template_cpp/src/CMakeFiles/edit_cache.dir
-/mnt/c/Users/Admin/Documents/CS451-2023-project/template_cpp/src/CMakeFiles/rebuild_cache.dir
+/workspaces/CS451-2023-project/template_cpp/CMakeFiles/rebuild_cache.dir
+/workspaces/CS451-2023-project/template_cpp/CMakeFiles/edit_cache.dir
+/workspaces/CS451-2023-project/template_cpp/src/CMakeFiles/rebuild_cache.dir
+/workspaces/CS451-2023-project/template_cpp/src/CMakeFiles/edit_cache.dir
+/workspaces/CS451-2023-project/template_cpp/src/CMakeFiles/da_proc.dir

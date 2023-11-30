@@ -60,7 +60,8 @@
         "typeinfo": "cpp",
         "unordered_set": "cpp",
         "cerrno": "cpp",
-        "set": "cpp"
+        "set": "cpp",
+        "optional": "cpp"
     },
-    "cmake.sourceDirectory": "C:/Users/Admin/Documents/CS451-2023-project/template_cpp/src"
+    "cmake.sourceDirectory": "/workspaces/CS451-2023-project/template_cpp/src"
 }

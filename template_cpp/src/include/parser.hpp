@@ -5,6 +5,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <set>
 
 #include <algorithm>
 #include <cctype>
@@ -18,7 +19,10 @@
 #include <cstdlib>
 #include <cstring>
 #include <unistd.h>
+#include <stdarg.h>
+#include <chrono>
 
+typedef std::pair<int, std::string> message_t; // sender em_id + message
 class Parser {
 public:
   struct Host {
@@ -128,9 +132,13 @@ public:
   }
 
   int message_to_send, recv_em_id;
+  std::set<message_t> delivered_pl;
 
-  /*  Input path to config file,
-      return true if success
+  /*
+    Perfect Links application configuration
+    Input path to config file, return true if success
+
+    The config file contains two integers m i in its first line. The integers are separated by a single space character. m defines how many messages each sender process should send. i is the index of the receiver process. The receiver process only receives messages while the sender processes only send messages. All n-1 sender processes, send m messages each. Sender processes send messages 1 to m in order.
   */
   bool configPerfectLink(const std::string& config_path) {
     std::ifstream config(config_path);
@@ -146,6 +154,118 @@ public:
     
     return true;
   }
+
+  std::vector<bool> delivered_urb; // delivered_urb[k]: if message k is delivered
+  std::vector<bool> delivered_fifo; // delivered_fifo[k]: if message k is delivered
+  std::vector<message_t> past_fifo; // past_fifo: a vector of all past message
+  std::set<message_t> pending; // set of (sender, message) pairs
+  std::vector<bool> faulty; // faulty[p]: if process p is faulty
+  std::vector<std::set<int> > ack; // ack[k]: set of process id that has acked message k 
+
+  /*
+    FIFO Broadcast application configuration
+    Input path to config file, return true if success
+
+    The config file contains an integer m in its first line. m defines how many messages each process should broadcast. Processes broadcast messages 1 to m in order.
+  */
+  bool config_fifo(const std::string& config_path) {
+    std::ifstream config(config_path);
+
+    config.exceptions ( std::ifstream::failbit | std::ifstream::badbit );
+    try {
+      config >> message_to_send;
+    }
+    catch (const std::ifstream::failure& e) {
+      std::cerr << "Exception opening/reading/closing file\n";
+      return false;
+    }
+    
+    return true;
+  }
+
+  std::chrono::system_clock::time_point start_time = std::chrono::high_resolution_clock::now(); // Record the starting time
+
+  /* Format Time point into "HH:MM:SS:fff" */ 
+  std::string format_time_point(const std::chrono::system_clock::time_point& tp) {
+      // Extract the time since epoch (in seconds) from the time_point
+      time_t time_since_epoch = std::chrono::system_clock::to_time_t(tp);
+
+      // Extract the milliseconds from the time_point
+      auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(tp.time_since_epoch()) % 1000;
+
+      // Convert the time since epoch to a tm struct for local time
+      struct tm local_time;
+      localtime_r(&time_since_epoch, &local_time);
+
+      char buffer[16]; // HH:MM:SS.fff + null terminator
+      snprintf(buffer, sizeof(buffer), "%02d:%02d:%02d.%03d", local_time.tm_hour, local_time.tm_min, local_time.tm_sec, static_cast<int>(ms.count()));
+
+      return buffer;
+  }
+
+  /* Format Time Duration into "MM:ss:fff" */ 
+  std::string format_duration(const std::chrono::system_clock::time_point& start, const std::chrono::system_clock::time_point& end) {
+      auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+      auto minutes = std::chrono::duration_cast<std::chrono::minutes>(ms) % 100;
+      ms -= minutes;
+      auto seconds = std::chrono::duration_cast<std::chrono::seconds>(ms) % 100;
+      ms -= seconds;
+      auto millisecs = std::chrono::duration_cast<std::chrono::milliseconds>(ms) % 1000;
+
+      char buffer[16]; // MM:SS.fff + null terminator
+      snprintf(buffer, sizeof(buffer), "%02ld:%02ld.%03ld",
+      minutes.count(), seconds.count(), millisecs.count());
+
+      return buffer;
+  }
+
+  void reset_start_time()
+  {
+    start_time = std::chrono::high_resolution_clock::now();
+  }
+
+  std::string format_now_time_and_duration()
+  {
+    auto now_time = std::chrono::high_resolution_clock::now(); // Record the now time
+    return format_time_point(now_time) + " " + format_duration(start_time, now_time);
+  }
+
+  void writeConsole(const char* format, ...) {
+    va_list args;
+    va_start(args, format);
+
+    // 获取格式化后的字符串长度
+    int len = vsnprintf(NULL, 0, format, args);
+    va_end(args);
+
+    // 分配足够的内存来存储格式化后的字符串
+    char* output = static_cast<char*>(malloc(len + 1));
+
+    va_start(args, format);
+    vsnprintf(output, len + 1, format, args);
+    va_end(args);
+
+    std::cout << format_now_time_and_duration() << " " << output << std::endl;
+
+    free(output);
+  }
+
+  
+
+
+  void writeOutputFile(const char* buffer) {
+    std::ofstream outputFile(outputPath(), std::ios::app); // Open for appending
+    
+    if (outputFile.is_open()) {
+      outputFile << buffer << std::endl;
+      outputFile.close();
+    }
+    else {
+      std::cerr << "failed to open the file for appending." << std::endl;
+    }
+  }
+
+
 
   std::vector<Host> hosts() {
     std::ifstream hostsFile(hostsPath());
