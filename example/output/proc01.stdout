@@ -1,0 +1,121 @@
+
+My PID: 106224
+From a new terminal type `kill -SIGINT 106224` or `kill -SIGTERM 106224` to stop processing packets
+
+My ID: 1
+
+List of resolved hosts is:
+==========================
+1
+Human-readable IP: 127.0.0.1
+Machine-readable IP: 16777343
+Human-readbale Port: 11001
+Machine-readbale Port: 63786
+
+2
+Human-readable IP: 127.0.0.1
+Machine-readable IP: 16777343
+Human-readbale Port: 11002
+Machine-readbale Port: 64042
+
+3
+Human-readable IP: 127.0.0.1
+Machine-readable IP: 16777343
+Human-readbale Port: 11003
+Machine-readbale Port: 64298
+
+
+Path to output:
+===============
+/workspaces/CS451-2023-project/example/output/proc01.output
+
+Path to config:
+===============
+./example/output/config
+
+Uniform Reliable Broadcast:
+===============
+Configure result is SUCCESS
+Numbers of messages to broadcast: 10
+Doing some initialization...
+Try to bind
+fifo init done
+
+Broadcasting and delivering messages...
+
+14:58:34.126 00:00.010 pthread_create send_thread
+14:58:34.126 00:00.010 pthread_create recv_thread
+14:58:34.126 00:00.011 Start senderPerfectLinks
+14:58:34.126 00:00.011 1->1 ;1 (x10)
+14:58:34.127 00:00.011 Start senderPerfectLinks
+14:58:34.127 00:00.011 1->2 ;1 (x10)
+14:58:34.127 00:00.011 Start senderPerfectLinks
+14:58:34.127 00:00.011 1->3 ;1 (x10)
+14:58:34.127 00:00.012 b 1
+14:58:34.128 00:00.012 Start senderPerfectLinks
+14:58:34.128 00:00.012 1->1 ;2 (x10)
+14:58:34.128 00:00.013 Start senderPerfectLinks
+14:58:34.128 00:00.013 1->2 ;2 (x10)
+14:58:34.128 00:00.013 Start senderPerfectLinks
+14:58:34.129 00:00.013 1->3 ;2 (x10)
+14:58:34.129 00:00.013 b 2
+14:58:34.129 00:00.014 Start senderPerfectLinks
+14:58:34.129 00:00.014 1->1 ;3 (x10)
+14:58:34.129 00:00.014 Start senderPerfectLinks
+14:58:34.130 00:00.014 1->2 ;3 (x10)
+14:58:34.130 00:00.014 Start senderPerfectLinks
+14:58:34.130 00:00.014 1->3 ;3 (x10)
+14:58:34.130 00:00.015 b 3
+14:58:34.130 00:00.015 Start senderPerfectLinks
+14:58:34.131 00:00.015 1->1 ;4 (x10)
+14:58:34.131 00:00.015 Start senderPerfectLinks
+14:58:34.131 00:00.015 1->2 ;4 (x10)
+14:58:34.131 00:00.016 Start senderPerfectLinks
+14:58:34.131 00:00.016 1->3 ;4 (x10)
+14:58:34.131 00:00.016 b 4
+14:58:34.132 00:00.016 Start senderPerfectLinks
+14:58:34.132 00:00.017 1->1 ;5 (x10)
+14:58:34.132 00:00.017 Start senderPerfectLinks
+14:58:34.132 00:00.017 1->2 ;5 (x10)
+14:58:34.133 00:00.017 Start senderPerfectLinks
+14:58:34.133 00:00.017 1->3 ;5 (x10)
+14:58:34.133 00:00.017 b 5
+14:58:34.133 00:00.018 Start senderPerfectLinks
+14:58:34.133 00:00.018 1->1 ;6 (x10)
+14:58:34.134 00:00.018 Start senderPerfectLinks
+14:58:34.134 00:00.018 1->2 ;6 (x10)
+14:58:34.134 00:00.018 Start senderPerfectLinks
+14:58:34.134 00:00.018 1->3 ;6 (x10)
+14:58:34.134 00:00.019 b 6
+14:58:34.135 00:00.019 Start senderPerfectLinks
+14:58:34.135 00:00.019 1->1 ;7 (x10)
+14:58:34.135 00:00.019 Start senderPerfectLinks
+14:58:34.135 00:00.020 1->2 ;7 (x10)
+14:58:34.135 00:00.020 Start senderPerfectLinks
+14:58:34.135 00:00.020 1->3 ;7 (x10)
+14:58:34.135 00:00.020 b 7
+14:58:34.136 00:00.020 Start senderPerfectLinks
+14:58:34.136 00:00.021 1->1 ;8 (x10)
+14:58:34.136 00:00.021 Start senderPerfectLinks
+14:58:34.136 00:00.021 1->2 ;8 (x10)
+14:58:34.137 00:00.021 Start senderPerfectLinks
+14:58:34.137 00:00.021 1->3 ;8 (x10)
+14:58:34.137 00:00.021 b 8
+14:58:34.137 00:00.022 Start senderPerfectLinks
+14:58:34.137 00:00.022 1->1 ;9 (x10)
+14:58:34.138 00:00.022 Start senderPerfectLinks
+14:58:34.138 00:00.022 1->2 ;9 (x10)
+14:58:34.138 00:00.022 Start senderPerfectLinks
+14:58:34.138 00:00.022 1->3 ;9 (x10)
+14:58:34.138 00:00.023 b 9
+14:58:34.139 00:00.023 Start senderPerfectLinks
+14:58:34.139 00:00.023 1->1 ;10 (x10)
+14:58:34.139 00:00.023 Start senderPerfectLinks
+14:58:34.139 00:00.024 1->2 ;10 (x10)
+14:58:34.139 00:00.024 Start senderPerfectLinks
+14:58:34.139 00:00.024 1->3 ;10 (x10)
+14:58:34.139 00:00.024 b 10
+14:58:34.140 00:00.025 pthread_join send_thread
+14:58:34.144 00:00.028 Start receiverPerfectLinks
+14:58:34.144 00:00.029 recv fr: 2 ;1
+14:58:34.145 00:00.029 deli_pl: 2 ;1

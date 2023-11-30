@@ -234,11 +234,9 @@ public:
     va_list args;
     va_start(args, format);
 
-    // 获取格式化后的字符串长度
     int len = vsnprintf(NULL, 0, format, args);
     va_end(args);
 
-    // 分配足够的内存来存储格式化后的字符串
     char* output = static_cast<char*>(malloc(len + 1));
 
     va_start(args, format);

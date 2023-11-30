@@ -37,7 +37,8 @@ void* send_thread(void* arg) {
 
     for (int i = 1; i <= parser.message_to_send; i++)
     {
-        broadcast_urb(em_id, parser, std::to_string(i));
+        // broadcast_urb(em_id, parser, std::to_string(i));
+        broadcast_fifo(em_id, parser, i);
     }
 
     *result = 1;

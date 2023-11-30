@@ -24,8 +24,11 @@ int deformat_get_m_fifo(std::string & str)
     if (position != std::string::npos) {
         return std::stoi(str.substr(position + 1));
     } 
-    else {
-        return -1; // ';' not found
+    else { // ';' not found
+        try { return std::stoi(str); } 
+        catch (const std::invalid_argument& e) { return -1; }
+        catch (const std::out_of_range& e) { return -1; }
+        return -1;
     }
 }
 
@@ -70,12 +73,16 @@ void broadcast_fifo(int em_id, Parser parser, int m)
 {
     broadcast_urb(em_id, parser, format_past_fifo(parser) + ";" + std::to_string(m));
     parser.past_fifo.push_back({em_id, std::to_string(m)}); 
+    std::string res = "b " + std::to_string(m);
+    parser.writeConsole(res.c_str());
+    parser.writeOutputFile(res.c_str());
 }
 
 // deliver fifo
 void deliver_fifo(int em_id, Parser parser, int m)
 {
     std::string res = "d " + std::to_string(em_id) + " " + std::to_string(m);
+    parser.writeConsole(res.c_str());
     parser.writeOutputFile(res.c_str());
 }
 

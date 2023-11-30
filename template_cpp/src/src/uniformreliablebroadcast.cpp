@@ -7,6 +7,7 @@
 //  forall m do ack[m] := ∅;
 void init_urb(Parser parser)
 {
+    initPerfectLink(static_cast<int>(parser.id()), parser);
     parser.delivered_urb.assign(parser.message_to_send + 1, 0);
     parser.pending.clear();
     parser.faulty.assign(parser.hosts().size(), 0);
@@ -23,7 +24,6 @@ void broadcast_urb(int em_id, Parser parser, std::string buffer)
         // parser.recv_em_id = host.id;
         senderPerfectLinks(em_id, static_cast<int>(host.id), parser, buffer);
     }
-    parser.writeConsole("%d broadcast_urb %s ✓", em_id, buffer.c_str());
     // parser.writeOutputFile((std::string("b ") + buffer).c_str());
 }
 

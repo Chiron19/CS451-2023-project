@@ -1,37 +1,47 @@
 #include "perfectlink.hpp"
 
+Udp udp;
+
+void initPerfectLink(int em_id, Parser parser) {
+    udp.init_udp(em_id, parser);
+}
+
 void receiverPerfectLinks(int em_id, Parser parser) {
-    Udp udp(em_id, parser);
-    parser.writeConsole("Start");
+    parser.writeConsole("Start receiverPerfectLinks");
     for (;;) {
         message_t mes = udp.receive_udp();
+        parser.writeConsole("recv fr: %d %s", mes.first, mes.second.c_str());
         if (mes.first > 0) {
             // Searching in the set
             if (parser.delivered_pl.find(mes) == parser.delivered_pl.end()) {
                 // Not found: insert to the set 
                 parser.delivered_pl.insert(mes);
+                parser.writeConsole("deli_pl: %d %s", mes.first, mes.second.c_str());
                 
+                // For Algorithm 3.4: All-Ack Uniform Reliable Broadcast:
                 // upon event ⟨ beb, Deliver | p, [DATA, s, m] ⟩ do 
                 //  ack[m] := ack[m] ∪ {p};
                 //  if (s, m) ̸∈ pending then
                 //      pending := pending ∪ {(s, m)};
                 //      trigger ⟨ beb, Broadcast | [DATA, s, m] ⟩;
                 int m = deformat_get_m_fifo(mes.second);
-                parser.writeConsole("%d->%d ✓%s m=%d", mes.first, em_id, mes.second.c_str(), m);
                 if (m < 0) {
                     std::cerr << "fail to get m from message." << std::endl;
                     exit(0);
                 }
                 parser.ack[m].insert(mes.first);
+                parser.writeConsole("%d->%d ✓%s m=%d", mes.first, em_id, mes.second.c_str(), m);
                 if (parser.pending.find(mes) == parser.pending.end()) {
                     parser.pending.insert(mes);
 
+// For Algorithm 3.13: No-Waiting Causal Broadcas
 // upon exists (s, m) ∈ pending such that candeliver(m) ∧ m ̸∈ delivered do 
 // delivered := delivered ∪ {m};
 // trigger ⟨ urb, Deliver | s, m ⟩;
                     if (candeliver_urb(m, parser) && !parser.delivered_urb[m]) {
                         parser.delivered_urb[m] = 1;
                         deliver_urb(em_id, parser, mes, m);
+                        parser.writeConsole("urb delivered");
                     }
 
                     for (auto &host : parser.hosts()) {
@@ -65,15 +75,15 @@ void receiverPerfectLinks(int em_id, Parser parser) {
     message 
 */
 void senderPerfectLinks(int src_em_id, int dst_em_id, Parser parser, std::string buffer) {
-    Udp udp(src_em_id, parser);
-    parser.writeConsole("Start");
+    parser.writeConsole("Start senderPerfectLinks");
     // Original: Infinite Loop (keep sending m messages)
     // Modified: Sending finite times only
+    parser.writeConsole("%d->%d %s (x10)",  src_em_id, dst_em_id, buffer.c_str());
     for (int k = 0; k < 10; k++) {
         // for (int i = 1; i <= parser.message_to_send; i++)
         // {
-            udp.send_udp(dst_em_id, buffer);
-            parser.writeConsole("%d->%d %s",  src_em_id, dst_em_id, buffer.c_str());
+            udp.send_udp(dst_em_id, std::to_string(src_em_id) + ":" + buffer);
+            // parser.writeConsole("%d->%d %s",  src_em_id, dst_em_id, buffer.c_str());
             /*
             if (!k) { // broadcast message only show once
                 std::ofstream outputFile(parser.outputPath(), std::ios::app); // Open for appending
