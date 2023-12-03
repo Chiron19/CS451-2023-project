@@ -131,6 +131,20 @@ public:
     return configPath_.c_str();
   }
 
+  void clearOutputFile() {
+    std::ofstream outputFile(outputPath(), std::ofstream::out | std::ofstream::trunc); // open and clear the file
+
+    if (outputFile.is_open())
+    {
+        std::cout << "File opened and cleared successfully\n";
+        outputFile.close(); // close the file
+    }
+    else
+    {
+        std::cerr << "Error opening or clearing the file\n";
+    }
+  }
+
   int message_to_send, recv_em_id;
   std::set<message_t> delivered_pl;
 
@@ -157,7 +171,7 @@ public:
 
   std::vector<bool> delivered_urb; // delivered_urb[k]: if message k is delivered
   std::vector<bool> delivered_fifo; // delivered_fifo[k]: if message k is delivered
-  std::vector<message_t> past_fifo; // past_fifo: a vector of all past message
+  std::set<message_t> past_fifo; // past_fifo: a set of all past message (s, m)
   std::set<message_t> pending; // set of (sender, message) pairs
   std::vector<bool> faulty; // faulty[p]: if process p is faulty
   std::vector<std::set<int>> ack; // ack[k]: set of process id that has acked message k 

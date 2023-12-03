@@ -9,9 +9,12 @@ void* send_thread(void* arg)
     int em_id = args->em_id_;
     Parser & parser = args->parser_;
     
-    for (int m = 1; m <= parser.message_to_send; m++)
+    for (int k = 1;; k = 0)
     {
-        broadcast_fifo(em_id, parser, m);
+        for (int m = 1; m <= parser.message_to_send; m++)
+        {
+            broadcast_fifo(em_id, parser, m, k);
+        }
     }
 
     int *result = static_cast<int*>(malloc(sizeof(int)));

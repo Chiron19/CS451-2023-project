@@ -79,21 +79,6 @@ public:
         }
         buffer[n] = '\0';
 
-        // // Find the send's id with the port no.
-        // // std::cout << inet_ntoa(sender_addr.sin_addr) << " " << ntohs(sender_addr.sin_port) << std::endl;
-        // int sender_em_id = -1;
-        // for (unsigned long i = 1; i < addr.size(); ++i) {
-        //     if (htons(addr[i].second) == sender_addr.sin_port) {
-        //         sender_em_id = static_cast<int> (i);
-        //         break;
-        //     }
-        // }
-        // if (sender_em_id == -1) {
-        //     std::cout << "ERROR - SENDER DOESNT EXIST" << std::endl;
-        //     return {-1, ""};
-        // }
-
-        // printf("Received packet from proc %d (%s), message: %s\n", sender_em_id, addr[sender_em_id].first.c_str(), buffer);
         return extract_sender_id_and_buffer(buffer);
     }
 

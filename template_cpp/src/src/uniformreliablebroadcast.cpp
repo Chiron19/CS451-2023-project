@@ -54,48 +54,13 @@ void upon_event_deliver_beb_urb(int em_id, Parser &parser, message_t mes)
     }
 }
 
-// upon event ⟨ rb, Deliver | p, [DATA, mpast, m] ⟩ do 
-//  if m ̸∈ delivered then
-//      forall (s, n) ∈ mpast do    // by the order in the list
-//          if n ̸∈ delivered then
-//              trigger ⟨ crb, Deliver | s, n ⟩; 
-//              delivered := delivered ∪ {n}; 
-//              if (s, n) ̸∈ past then
-//                  append(past, (s, n)); 
-//      trigger ⟨ crb, Deliver | p, m ⟩;
-//      delivered := delivered ∪ {m}; 
-//      if (p, m) ̸∈ past then
-//          append(past, (p, m));
+// deliver urb
 void deliver_urb(int em_id, Parser & parser, message_t mes, int m)
 {
+    parser.delivered_urb[m] = 1;
     parser.writeConsole("%d->%d deliver_urb %s ✓", m, em_id, mes.second.c_str());
-    int s = mes.first;
-    if (!parser.delivered_fifo[m]) {
-        std::vector<int> m_past = deformat_get_m_past_fifo(mes.second);
-        for (auto n: m_past) {
-            if (!parser.delivered_fifo[n]) {
-                deliver_fifo(s, parser, n);
-                parser.delivered_fifo[n] = 1;
-                
-                message_t m1 = {s, std::to_string(n)};
-                auto it = std::find(parser.past_fifo.begin(), parser.past_fifo.end(), m1);
-                if (it == parser.past_fifo.end()) {
-                    // (s, n) not found in past
-                    parser.past_fifo.push_back(m1);
-                }
-            }
-        }
-
-        deliver_fifo(em_id, parser, m);
-        parser.delivered_fifo[m] = 1;
-
-        message_t m2 = {em_id, std::to_string(m)};
-        auto it = std::find(parser.past_fifo.begin(), parser.past_fifo.end(), m2);
-        if (it == parser.past_fifo.end()) {
-            // (em_id, m) not found in past
-            parser.past_fifo.push_back(m2);
-        }
-    }
+    
+    upon_event_deliver_urb_fifo(em_id, parser, mes, m);
 }
 
 // function candeliver(m) returns Boolean is 

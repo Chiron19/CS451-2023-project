@@ -31,7 +31,7 @@ void receiverPerfectLinks(int em_id, Parser & parser) {
     sending m messages
     message 
 */
-void senderPerfectLinks(int src_em_id, int dst_em_id, Parser & parser, std::string buffer) {
+void senderPerfectLinks(int src_em_id, int dst_em_id, Parser & parser, std::string & buffer) {
     parser.writeConsole("Start senderPerfectLinks");
     // Original: Infinite Loop (keep sending m messages)
     // Modified: Sending finite times only

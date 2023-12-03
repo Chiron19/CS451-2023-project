@@ -64,7 +64,9 @@ int main(int argc, char **argv) {
 
   std::cout << "Path to output:\n";
   std::cout << "===============\n";
-  std::cout << parser.outputPath() << "\n\n";
+  std::cout << parser.outputPath() << "\n";
+  parser.clearOutputFile();
+  std::cout << "\n";
 
   const char* config_path = parser.configPath();
   std::cout << "Path to config:\n";

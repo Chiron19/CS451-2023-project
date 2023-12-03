@@ -30,9 +30,11 @@ std::vector<int> deformat_get_m_past_fifo(std::string & str);
 
 void init_fifo(int em_id, Parser &parser);
 
-void broadcast_fifo(int em_id, Parser &parser, int m);
+void broadcast_fifo(int em_id, Parser &parser, int m, bool is_write_outputfile);
 
 void deliver_fifo(int em_id, Parser &parser, int m);
+
+void upon_event_deliver_urb_fifo(int em_id, Parser & parser, message_t mes, int m);
 
 #endif
 #endif
