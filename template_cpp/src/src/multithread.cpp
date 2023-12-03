@@ -45,10 +45,10 @@ void thread_run(int em_id, Parser &parser)
     struct complex_args arg = {em_id, parser};
 
     while (1) {
-        pthread_create(&sendThread, nullptr, send_thread, *arg);
+        pthread_create(&sendThread, nullptr, send_thread, &arg);
         parser.writeConsole("pthread_create sendThread");
 
-        pthread_create(&recvThread, nullptr, recv_thread, *arg);
+        pthread_create(&recvThread, nullptr, recv_thread, &arg);
         parser.writeConsole("pthread_create recvThread");
 
         // Wait for the threads to finish (you can implement a termination condition)

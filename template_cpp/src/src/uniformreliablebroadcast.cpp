@@ -12,6 +12,8 @@ void init_urb(Parser & parser)
     parser.pending.clear();
     parser.faulty.assign(parser.hosts().size(), 0);
     parser.ack.assign(parser.message_to_send + 1, std::set<int>());
+
+    parser.writeConsole("init urb done");
 }
 
 // upon event ⟨ urb, Broadcast | m ⟩ do
@@ -67,8 +69,6 @@ void upon_event_deliver_beb_urb(int em_id, Parser &parser, message_t mes)
 void deliver_urb(int em_id, Parser & parser, message_t mes, int m)
 {
     parser.writeConsole("%d->%d deliver_urb %s ✓", m, em_id, mes.second.c_str());
-    // std::string res = "d " + std::to_string(em_id) + " " + std::to_string(m);
-    // parser.writeOutputFile(res);
     int s = mes.first;
     if (!parser.delivered_fifo[m]) {
         std::vector<int> m_past = deformat_get_m_past_fifo(mes.second);
@@ -80,7 +80,7 @@ void deliver_urb(int em_id, Parser & parser, message_t mes, int m)
                 message_t m1 = {s, std::to_string(n)};
                 auto it = std::find(parser.past_fifo.begin(), parser.past_fifo.end(), m1);
                 if (it == parser.past_fifo.end()) {
-                    // (s , n) not found in past
+                    // (s, n) not found in past
                     parser.past_fifo.push_back(m1);
                 }
             }
@@ -92,7 +92,7 @@ void deliver_urb(int em_id, Parser & parser, message_t mes, int m)
         message_t m2 = {em_id, std::to_string(m)};
         auto it = std::find(parser.past_fifo.begin(), parser.past_fifo.end(), m2);
         if (it == parser.past_fifo.end()) {
-            // (em_id , m) not found in past
+            // (em_id, m) not found in past
             parser.past_fifo.push_back(m2);
         }
     }
@@ -110,9 +110,9 @@ bool candeliver_urb(int m, Parser & parser)
 // trigger ⟨ urb, Deliver | s, m ⟩;
 void check_pending_urb(int em_id, Parser &parser)
 {
-    for (auto &itr: parser.pending)
+    for (auto const &itr: parser.pending)
     {
-        int m = deformat_get_m_fifo(const_cast<std::string>(itr.second));
+        int m = deformat_get_m_fifo(const_cast<std::string&>(itr.second));
         if (candeliver_urb(m, parser) && !parser.delivered_urb[m]) {
             parser.delivered_urb[m] = 1;
             deliver_urb(em_id, parser, itr, m);

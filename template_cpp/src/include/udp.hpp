@@ -34,6 +34,8 @@ public:
         const short port = addr[em_id].second;
         setup_socket_udp(&recv_fd, 0, port);
         setup_socket_udp(&send_fd, 1, port);
+
+        parser.writeConsole("init udp done");
     }
 
     /*
@@ -113,7 +115,6 @@ private:
         servaddr.sin_port = htons(port);
 
         // bind socket with receiver's file descipter
-        printf("Try to bind\n");
         if (bind(*__fd, reinterpret_cast<const struct sockaddr *>(&servaddr), 
                 sizeof(servaddr)) < 0) {
             printf("Socket binding failed...\n");

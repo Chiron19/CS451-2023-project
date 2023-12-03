@@ -64,6 +64,8 @@ void init_fifo(int em_id, Parser & parser)
     init_urb(parser);
     parser.delivered_fifo.assign(parser.message_to_send, 0);
     parser.past_fifo.clear();
+
+    parser.writeConsole("init fifo done");
 }
 
 // upon event ⟨ crb, Broadcast | m ⟩ do

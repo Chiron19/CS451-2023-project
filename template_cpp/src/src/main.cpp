@@ -34,7 +34,7 @@ int main(int argc, char **argv) {
   // Call with `false` if no config file is necessary.
   bool requireConfig = true;
 
-  Parser & parser(argc, argv);
+  Parser parser(argc, argv);
   parser.parse();
 
   // hello();
@@ -84,21 +84,9 @@ int main(int argc, char **argv) {
 
   std::cout << "Doing some initialization...\n";
   init_fifo(em_id, parser);
-  std::cout << "fifo init done\n\n";
+  std::cout << std::endl;
 
   std::cout << "Broadcasting and delivering messages...\n\n";
-
-  // if (parser.recv_em_id == em_id) {
-  //   std::cout << "I am receiver.\n\n";
-  //   receiverPerfectLinks(em_id, parser);
-  // }
-  // else {
-  //   std::cout << "I am sender.\n\n";
-  //   for (int i = 1; i <= parser.message_to_send; i++)
-  //   {
-  //     senderPerfectLinks(em_id, parser.recv_em_id, parser, std::to_string(i));
-  //   }
-  // }
   thread_run(em_id, parser);
   
   std::cout << "Broadcast Finished, Sleep.\n\n";

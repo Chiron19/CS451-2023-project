@@ -4,19 +4,23 @@ Udp udp;
 
 void initPerfectLink(int em_id, Parser & parser) {
     udp.init_udp(em_id, parser);
+
+    parser.writeConsole("init perfectlink done");
 }
 
 void receiverPerfectLinks(int em_id, Parser & parser) {
     parser.writeConsole("Start receiverPerfectLinks");
     for (;;) {
         message_t mes = udp.receive_udp();
-        parser.writeConsole("recv fr: %d %s", mes.first, mes.second.c_str());
+        // parser.writeConsole("recv fr: %d %s", mes.first, mes.second.c_str());
         if (mes.first > 0) {
             // Searching in the set
             if (parser.delivered_pl.find(mes) == parser.delivered_pl.end()) {
                 // Not found: insert to the set 
                 parser.delivered_pl.insert(mes);
                 parser.writeConsole("deli_pl: %d %s", mes.first, mes.second.c_str());
+
+                upon_event_deliver_beb_urb(em_id, parser, mes);
             }
         }
     }
