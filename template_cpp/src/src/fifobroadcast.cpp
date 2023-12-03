@@ -88,6 +88,8 @@ void init_fifo(int em_id, Parser & parser)
     parser.delivered_fifo.clear();
     parser.past_fifo.clear();
 
+    parser.cheating_vector_d.assign(parser.hosts().size() + 1, 0);
+
     parser.writeConsole("init fifo done");
 }
 
@@ -119,26 +121,19 @@ void deliver_fifo(int src_em_id, Parser & parser, int m)
     parser.delivered_fifo.insert(std::to_string(m));
 
     // TO BE FIXED
-    std::pair<int, int> dd = {src_em_id, m};
-    auto it = std::find(parser.cheating_vector_d.begin(), parser.cheating_vector_d.end(), dd);
-    if (it == parser.cheating_vector_d.end()) {
-        int m_ = 0;
-        for (auto pair_:parser.cheating_vector_d)
-        {
-            if (pair_.first == src_em_id) {
-                m_ = pair_.second;
-            }
-        }
-        if (m_ < m) {
-            for (int i = m_ + 1; i <= m; i++)
+    pthread_mutex_lock(&mutex);
+        if (parser.cheating_vector_d[src_em_id] < m) {
+            std::string res;
+            while (++parser.cheating_vector_d[src_em_id] < m)
             {
-                std::string res = "d " + std::to_string(src_em_id) + " " + std::to_string(m);
+                res = "d " + std::to_string(src_em_id);
+                res = res + " " + std::to_string(parser.cheating_vector_d[src_em_id]);
                 parser.writeConsole(res.c_str());
                 parser.writeOutputFile(res.c_str());
             }
-            parser.cheating_vector_d.push_back(dd);
+            parser.cheating_vector_d[src_em_id] = m;
         }
-    }
+    pthread_mutex_unlock(&mutex);
 
     
     // std::string r = "d' ";

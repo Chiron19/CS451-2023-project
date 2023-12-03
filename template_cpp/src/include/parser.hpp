@@ -176,7 +176,7 @@ public:
   std::set<message_t> pending; // set of (sender, message) pairs
   std::vector<std::set<int>> ack; // ack[k]: set of process id that has acked message k 
 
-  std::vector<std::pair<int, int>> cheating_vector_d;
+  std::vector<int> cheating_vector_d;
 
   /*
     FIFO Broadcast application configuration
