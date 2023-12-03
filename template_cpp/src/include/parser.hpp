@@ -160,7 +160,7 @@ public:
   std::vector<message_t> past_fifo; // past_fifo: a vector of all past message
   std::set<message_t> pending; // set of (sender, message) pairs
   std::vector<bool> faulty; // faulty[p]: if process p is faulty
-  std::vector<std::vector<int>> ack; // ack[k]: set of process id that has acked message k 
+  std::vector<std::set<int>> ack; // ack[k]: set of process id that has acked message k 
 
   /*
     FIFO Broadcast application configuration

@@ -3,7 +3,7 @@
 /*
     Format the past into "x,y,z" string (no space)
 */
-std::string format_past_fifo(Parser parser)
+std::string format_past_fifo(Parser & parser)
 {
     std::string res;
     for (message_t j: parser.past_fifo)
@@ -59,7 +59,7 @@ std::vector<int> deformat_get_m_past_fifo(std::string & str)
 // upon event ⟨ crb, Init ⟩ do 
 //  delivered := ∅;
 //  past := [];
-void init_fifo(int em_id, Parser parser)
+void init_fifo(int em_id, Parser & parser)
 {
     init_urb(parser);
     parser.delivered_fifo.assign(parser.message_to_send, 0);
@@ -69,7 +69,7 @@ void init_fifo(int em_id, Parser parser)
 // upon event ⟨ crb, Broadcast | m ⟩ do
 //  trigger ⟨ rb, Broadcast | [DATA, past, m] ⟩; 
 //  append(past, (self, m));
-void broadcast_fifo(int em_id, Parser parser, int m)
+void broadcast_fifo(int em_id, Parser & parser, int m)
 {
     broadcast_urb(em_id, parser, format_past_fifo(parser) + ";" + std::to_string(m));
     parser.past_fifo.push_back({em_id, std::to_string(m)}); 
@@ -79,7 +79,7 @@ void broadcast_fifo(int em_id, Parser parser, int m)
 }
 
 // deliver fifo
-void deliver_fifo(int em_id, Parser parser, int m)
+void deliver_fifo(int em_id, Parser & parser, int m)
 {
     std::string res = "d " + std::to_string(em_id) + " " + std::to_string(m);
     parser.writeConsole(res.c_str());

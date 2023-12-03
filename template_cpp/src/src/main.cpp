@@ -34,7 +34,7 @@ int main(int argc, char **argv) {
   // Call with `false` if no config file is necessary.
   bool requireConfig = true;
 
-  Parser parser(argc, argv);
+  Parser & parser(argc, argv);
   parser.parse();
 
   // hello();

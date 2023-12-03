@@ -25,7 +25,7 @@ public class Main {
     }
 
     public static void main(String[] args) throws InterruptedException {
-        Parser parser = new Parser(args);
+        Parser & parser = new Parser(args);
         parser.parse();
 
         initSignalHandlers();
