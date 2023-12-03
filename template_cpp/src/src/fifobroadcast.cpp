@@ -85,5 +85,3 @@ void deliver_fifo(int em_id, Parser parser, int m)
     parser.writeConsole(res.c_str());
     parser.writeOutputFile(res.c_str());
 }
-
- 

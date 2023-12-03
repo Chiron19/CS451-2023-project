@@ -23,7 +23,7 @@ public:
     
     Udp(){}
 
-    void init_udp(int em_id, Parser parser) {
+    void init_udp(int em_id, Parser &parser) {
         // For id == 0, put empty element
         addr.push_back({"", 0});
         for (auto &host : parser.hosts()) {
