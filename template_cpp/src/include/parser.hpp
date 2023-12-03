@@ -146,7 +146,8 @@ public:
   }
 
   int message_to_send, recv_em_id;
-  std::set<message_t> delivered_pl;
+  std::set<message_t> delivered_pl; // dst_id, message_buffer
+  std::vector<message_t> ack_queue_pl; 
 
   /*
     Perfect Links application configuration
@@ -169,12 +170,13 @@ public:
     return true;
   }
 
-  std::vector<bool> delivered_urb; // delivered_urb[k]: if message k is delivered
-  std::vector<bool> delivered_fifo; // delivered_fifo[k]: if message k is delivered
-  std::set<message_t> past_fifo; // past_fifo: a set of all past message (s, m)
+  std::set<message_t> delivered_urb;  // src_id, message_buffer (urb not required totality, so src_id exist)
+  std::set<std::string> delivered_fifo; // message_buffer (because it's broadcast, "delivered" means broadcast to all dst_id done)
+  std::vector<message_t> past_fifo;   // past_fifo: a vector of all past message (s, m) in order
   std::set<message_t> pending; // set of (sender, message) pairs
-  std::vector<bool> faulty; // faulty[p]: if process p is faulty
   std::vector<std::set<int>> ack; // ack[k]: set of process id that has acked message k 
+
+  std::vector<std::pair<int, int>> cheating_vector_d;
 
   /*
     FIFO Broadcast application configuration

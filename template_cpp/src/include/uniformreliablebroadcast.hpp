@@ -28,13 +28,13 @@ void init_urb(Parser &parser);
 
 void broadcast_urb(int em_id, Parser &parser, std::string buffer);
 
-void upon_event_deliver_beb_urb(int em_id, Parser &parser, message_t mes);
+void upon_event_deliver_beb_urb(int em_id, Parser &parser, message_t mes, int s, int m);
 
-void deliver_urb(int em_id, Parser &parser, message_t mes, int m);
+void deliver_urb(int em_id, Parser & parser, message_t mes, int s, int m);
 
 bool candeliver_urb(int m, Parser &parser);
 
-void check_pending_urb(int em_id, Parser &parser);
+void check_pending_urb(int em_id, Parser &parser, message_t mes, int s, int m);
 
 #endif
 #endif
