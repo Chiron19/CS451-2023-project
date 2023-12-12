@@ -13,7 +13,7 @@ void* send_thread(void* arg)
     {
         for (int m = 1; m <= parser.message_to_send; m++)
         {
-            broadcast_fifo(em_id, parser, m, k);
+            broadcast_urb(em_id, parser, std::to_string(m));
         }
     }
 

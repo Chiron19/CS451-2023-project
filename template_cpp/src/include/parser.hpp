@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 #include <set>
+#include <map>
 
 #include <algorithm>
 #include <cctype>
@@ -170,11 +171,12 @@ public:
     return true;
   }
 
-  std::set<message_t> delivered_urb;  // src_id, message_buffer (urb not required totality, so src_id exist)
+  std::set<std::pair<int, int>> delivered_urb;  // src_id, message_k (urb not required totality, so src_id exist)
   std::set<std::string> delivered_fifo; // message_buffer (because it's broadcast, "delivered" means broadcast to all dst_id done)
   std::vector<message_t> past_fifo;   // past_fifo: a vector of all past message (s, m) in order
-  std::set<message_t> pending; // set of (sender, message) pairs
-  std::vector<std::set<int>> ack; // ack[k]: set of process id that has acked message k 
+  std::set<std::pair<int, int>> pending; // set of (src_id, message_k) pairs
+  std::vector<std::set<int>> ack; // ack[k]: set of process id that has acked message k
+  std::map<std::string, int> m_mapping_urb; // map mes to int k
 
   std::vector<int> cheating_vector_d;
 
@@ -264,11 +266,23 @@ public:
     free(output);
   }
 
-  void writeOutputFile(const char* buffer) {
+  void writeOutputFile(const char* format, ...) {
     std::ofstream outputFile(outputPath(), std::ios::app); // Open for appending
+
+    va_list args;
+    va_start(args, format);
+
+    int len = vsnprintf(NULL, 0, format, args);
+    va_end(args);
+
+    char* output = static_cast<char*>(malloc(len + 1));
+
+    va_start(args, format);
+    vsnprintf(output, len + 1, format, args);
+    va_end(args);
     
     if (outputFile.is_open()) {
-      outputFile << buffer << std::endl;
+      outputFile << output << std::endl;
       outputFile.close();
     }
     else {

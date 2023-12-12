@@ -15,42 +15,6 @@ std::string format_past_fifo(Parser & parser)
 }
 
 /*
-    Get m from "x,y,z;m" string
-*/
-int deformat_get_m_fifo(std::string & str)
-{
-    size_t position = str.find(';');
-
-    if (position != std::string::npos) {
-        return std::stoi(str.substr(position + 1));
-    } 
-    else { // ';' not found
-        try { return std::stoi(str); } 
-        catch (const std::invalid_argument& e) { return -1; }
-        catch (const std::out_of_range& e) { return -1; }
-        return -1;
-    }
-}
-
-/*
-    Get s from "x,y,z.s;m" string
-*/
-int deformat_get_s_fifo(std::string & str)
-{
-    size_t position = str.find('.');
-
-    if (position != std::string::npos) {
-        return std::stoi(str.substr(position + 1));
-    } 
-    else { // '.' not found
-        try { return std::stoi(str); } 
-        catch (const std::invalid_argument& e) { return -1; }
-        catch (const std::out_of_range& e) { return -1; }
-        return -1;
-    }
-}
-
-/*
     Get a vector of x, y, z from "x,y,z;m" string
 */
 std::vector<message_t> deformat_get_m_past_fifo(std::string & str)

@@ -24,11 +24,17 @@
     Page 83, Algorithm 3.4: All-Ack Uniform Reliable Broadcast
     Page 85, Algorithm 3.5: Majority-Ack Uniform Reliable Broadcast
 */
+std::string deformat_get_mes_urb(std::string & str);
+
+int deformat_get_s_urb(std::string & str);
+
+int get_mapping_mes(Parser & parser, std::string & str);
+
 void init_urb(Parser &parser);
 
 void broadcast_urb(int em_id, Parser &parser, std::string buffer);
 
-void upon_event_deliver_beb_urb(int em_id, Parser &parser, message_t mes, int s, int m);
+void upon_event_deliver_beb_urb(int em_id, Parser &parser, message_t mes);
 
 void deliver_urb(int em_id, Parser & parser, message_t mes, int s, int m);
 

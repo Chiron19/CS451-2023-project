@@ -92,5 +92,5 @@
         "valarray": "cpp",
         "variant": "cpp"
     },
-    "cmake.sourceDirectory": "/mnt/c/Users/Admin/Documents/CS451-2023-project/template_cpp/src"
+    "cmake.sourceDirectory": "/workspaces/CS451-2023-project/template_cpp/src"
 }

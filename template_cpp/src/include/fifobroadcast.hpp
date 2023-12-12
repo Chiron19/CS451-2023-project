@@ -24,10 +24,6 @@
 */
 std::string format_past_fifo(Parser &parser);
 
-int deformat_get_m_fifo(std::string & str);
-
-int deformat_get_s_fifo(std::string & str);
-
 std::vector<message_t> deformat_get_m_past_fifo(std::string & str);
 
 void init_fifo(int em_id, Parser &parser);

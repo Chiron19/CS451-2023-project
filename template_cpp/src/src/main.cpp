@@ -85,7 +85,7 @@ int main(int argc, char **argv) {
   std::cout << "Numbers of messages to broadcast: " << parser.message_to_send << std::endl;
 
   std::cout << "Doing some initialization...\n";
-  init_fifo(em_id, parser);
+  init_urb(parser);
   std::cout << std::endl;
 
   std::cout << "Broadcasting and delivering messages...\n\n";
