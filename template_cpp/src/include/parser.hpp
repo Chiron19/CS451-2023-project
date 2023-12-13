@@ -171,9 +171,10 @@ public:
     return true;
   }
 
-  std::set<std::pair<int, int>> delivered_urb;  // src_id, message_k (urb not required totality, so src_id exist)
   std::set<std::string> delivered_fifo; // message_buffer (because it's broadcast, "delivered" means broadcast to all dst_id done)
   std::vector<message_t> past_fifo;   // past_fifo: a vector of all past message (s, m) in order
+
+  std::set<std::pair<int, int>> delivered_urb;  // src_id, message_k (urb not required totality, so src_id exist)
   std::set<std::pair<int, int>> pending; // set of (src_id, message_k) pairs
   std::vector<std::set<int>> ack; // ack[k]: set of process id that has acked message k
   std::map<std::string, int> m_mapping_urb; // map mes to int k
@@ -192,6 +193,48 @@ public:
     config.exceptions ( std::ifstream::failbit | std::ifstream::badbit );
     try {
       config >> message_to_send;
+    }
+    catch (const std::ifstream::failure& e) {
+      std::cerr << "Exception opening/reading/closing file\n";
+      return false;
+    }
+    
+    return true;
+  }
+
+  /* variable for lattice agreement */
+  bool active_lattice;
+  int ack_count_lattice, nack_count_lattice, active_proposal_number_lattice;
+  std::set<int> proposed_value_lattice, accepted_value_lattice;
+  int vs, ds;
+  std::vector<std::vector<int>> proposals_lattice; // proposals_lattice[k]: a vector of int in k-th proposal
+
+  /*
+    Lattice Agreement application configuration
+    Input path to config file, return true if success
+
+    The config file consists of multiple lines.
+    The first line contains three integers, p vs ds (separated by single spaces). p denotes the number of proposals for each process, vs denotes the maximum number of elements in a proposal, and ds denotes the maximum number of distinct elements across all proposals of all processes.
+    The subsequent p lines contain proposals. Each proposal is a set of positive integers, written as a list of integers separated by single spaces. Every line can have up to vs integers.
+  */
+  bool config_lattice(const std::string& config_path) {
+    std::ifstream config(config_path);
+
+    config.exceptions ( std::ifstream::failbit | std::ifstream::badbit );
+    try {
+      config >> message_to_send >> vs >> ds;
+      proposals_lattice.assign(message_to_send, std::vector<int>());
+      std::string line;
+      for (int i = 0; i < message_to_send; i++)
+      {
+        if (std::getline(config, line)) {
+          std::stringstream ss(line);
+          int num;
+          while (ss >> num) {
+              proposals_lattice[i].push_back(num);
+          }
+        }
+      }   
     }
     catch (const std::ifstream::failure& e) {
       std::cerr << "Exception opening/reading/closing file\n";
@@ -289,8 +332,6 @@ public:
       std::cerr << "failed to open the file for appending." << std::endl;
     }
   }
-
-
 
   std::vector<Host> hosts() {
     std::ifstream hostsFile(hostsPath());
