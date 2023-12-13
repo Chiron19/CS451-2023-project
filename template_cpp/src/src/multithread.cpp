@@ -9,13 +9,20 @@ void* send_thread(void* arg)
     int em_id = args->em_id_;
     Parser & parser = args->parser_;
     
-    for (int k = 1;; k = 0)
+    for (int i = 0; i < parser.message_to_send; i++)
     {
-        for (int m = 1; m <= parser.message_to_send; m++)
-        {
-            broadcast_urb(em_id, parser, std::to_string(m));
-        }
+        init_lattice(em_id, parser);
+        propose_lattice(em_id, parser, parser.proposals_lattice[i]);
     }
+
+    // // Testing with urb
+    // for (int k = 1;; k = 0)
+    // {
+    //     for (int m = 1; m <= parser.message_to_send; m++)
+    //     {
+    //         broadcast_urb(em_id, parser, std::to_string(m));
+    //     }
+    // }
 
     int *result = static_cast<int*>(malloc(sizeof(int)));
     *result = 0;

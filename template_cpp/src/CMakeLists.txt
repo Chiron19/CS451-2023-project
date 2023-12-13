@@ -2,7 +2,7 @@
 # You can, however, change the list of files that comprise this variable.
 
 include_directories(include)
-set(SOURCES src/main.cpp src/hello.c src/perfectlink.cpp src/uniformreliablebroadcast.cpp src/fifobroadcast.cpp src/multithread.cpp)
+set(SOURCES src/main.cpp src/hello.c src/perfectlink.cpp src/uniformreliablebroadcast.cpp src/fifobroadcast.cpp src/multithread.cpp src/latticeagreement.cpp)
 
 # DO NOT EDIT THE FOLLOWING LINES
 find_package(Threads)

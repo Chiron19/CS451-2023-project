@@ -147,7 +147,7 @@ public:
   }
 
   int message_to_send, recv_em_id;
-  std::set<message_t> delivered_pl; // dst_id, message_buffer
+  std::set<message_t> not_delivered_pl; // dst_id, message_buffer
   std::vector<message_t> ack_queue_pl; 
 
   /*
@@ -207,7 +207,7 @@ public:
   int ack_count_lattice, nack_count_lattice, active_proposal_number_lattice;
   std::set<int> proposed_value_lattice, accepted_value_lattice;
   int vs, ds;
-  std::vector<std::vector<int>> proposals_lattice; // proposals_lattice[k]: a vector of int in k-th proposal
+  std::vector<std::set<int>> proposals_lattice; // proposals_lattice[k]: a set of int in k-th proposal
 
   /*
     Lattice Agreement application configuration
@@ -223,15 +223,14 @@ public:
     config.exceptions ( std::ifstream::failbit | std::ifstream::badbit );
     try {
       config >> message_to_send >> vs >> ds;
-      proposals_lattice.assign(message_to_send, std::vector<int>());
+      proposals_lattice.assign(message_to_send, std::set<int>());
       std::string line;
-      for (int i = 0; i < message_to_send; i++)
-      {
-        if (std::getline(config, line)) {
+      for (int i = 0; i < message_to_send; i++) {
+        if (std::getline(config >> std::ws, line)) {
           std::stringstream ss(line);
           int num;
           while (ss >> num) {
-              proposals_lattice[i].push_back(num);
+              proposals_lattice[i].insert(num);
           }
         }
       }   
@@ -240,6 +239,10 @@ public:
       std::cerr << "Exception opening/reading/closing file\n";
       return false;
     }
+
+    // for (int i = 0; i < message_to_send; i++) {
+    //     std::cout << "parser.proposals_lattice[" << i << "].size = " << proposals_lattice[i].size() << std::endl;
+    // }
     
     return true;
   }

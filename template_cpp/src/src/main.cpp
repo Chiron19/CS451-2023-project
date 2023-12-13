@@ -10,6 +10,7 @@
 #include "uniformreliablebroadcast.hpp"
 #include "fifobroadcast.hpp"
 #include "multithread.hpp"
+#include "latticeagreement.hpp"
 
 static void stop(int) {
   // reset signal handlers to default
@@ -81,11 +82,11 @@ int main(int argc, char **argv) {
 
   std::cout << "Uniform Reliable Broadcast:\n";
   std::cout << "===============\n";
-  std::cout << "Configure result is " << (parser.config_fifo(std::string(config_path)) ? "SUCCESS" : "FAIL") << std::endl;
+  std::cout << "Configure result is " << (parser.config_lattice(std::string(config_path)) ? "SUCCESS" : "FAIL") << std::endl;
   std::cout << "Numbers of messages to broadcast: " << parser.message_to_send << std::endl;
 
   std::cout << "Doing some initialization...\n";
-  init_urb(parser);
+  initPerfectLink(em_id, parser);
   std::cout << std::endl;
 
   std::cout << "Broadcasting and delivering messages...\n\n";

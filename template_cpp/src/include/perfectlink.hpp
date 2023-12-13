@@ -9,6 +9,7 @@
 #include <iostream>
 #include <fstream>
 #include <set>
+#include <thread>
 #include <chrono>
 
 #include "parser.hpp"
@@ -16,6 +17,7 @@
 #include "uniformreliablebroadcast.hpp"
 #include "fifobroadcast.hpp"
 #include "multithread.hpp"
+#include "latticeagreement.hpp"
 
 /* 
     Introduction to Reliable and Secure Distributed Programming, 2nd edition
