@@ -41,17 +41,20 @@ public:
     /*
         Send UDP packet to target
      */
-    void send_udp(int recv_em_id, const std::string& message) {
+    void send_udp(int send_em_id, int recv_em_id, const std::string& message) {
         struct sockaddr_in recvaddr;
         memset(&recvaddr, 0, sizeof(recvaddr));
         recvaddr.sin_family = AF_INET;
         recvaddr.sin_port = htons(addr[recv_em_id].second);
         recvaddr.sin_addr.s_addr = inet_addr(addr[recv_em_id].first.c_str());
 
+        // encode sender_id with ":" to the head of message
+        std::string message_ = std::to_string(send_em_id) + ":" + message;
+
         // std::cout << "sendto:" << recv_em_id << " " << message << std::endl;
         // std::cout << recvaddr.sin_addr.s_addr << " " << addr[recv_em_id].first << " " << recvaddr.sin_port << std::endl;
 
-        ssize_t n = sendto(send_fd, message.c_str(), message.size(), 0, reinterpret_cast<const struct sockaddr*>(&recvaddr), sizeof(recvaddr));
+        ssize_t n = sendto(send_fd, message_.c_str(), message_.size(), 0, reinterpret_cast<const struct sockaddr*>(&recvaddr), sizeof(recvaddr));
 
         if (n < 0) {
              std::cout << "SENDTO ERROR " << errno << std::endl;

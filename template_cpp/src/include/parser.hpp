@@ -206,7 +206,7 @@ public:
   bool active_lattice;
   int ack_count_lattice, nack_count_lattice, active_proposal_number_lattice;
   std::set<int> proposed_value_lattice, accepted_value_lattice;
-  int vs, ds;
+  int vs, ds, current_slot;
   std::vector<std::set<int>> proposals_lattice; // proposals_lattice[k]: a set of int in k-th proposal
 
   /*
@@ -239,6 +239,8 @@ public:
       std::cerr << "Exception opening/reading/closing file\n";
       return false;
     }
+
+    current_slot = 0;
 
     // for (int i = 0; i < message_to_send; i++) {
     //     std::cout << "parser.proposals_lattice[" << i << "].size = " << proposals_lattice[i].size() << std::endl;
@@ -334,6 +336,8 @@ public:
     else {
       std::cerr << "failed to open the file for appending." << std::endl;
     }
+
+    free(output);
   }
 
   std::vector<Host> hosts() {

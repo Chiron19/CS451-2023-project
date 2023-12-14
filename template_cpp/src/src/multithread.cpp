@@ -9,20 +9,26 @@ void* send_thread(void* arg)
     int em_id = args->em_id_;
     Parser & parser = args->parser_;
     
-    for (int i = 0; i < parser.message_to_send; i++)
-    {
-        init_lattice(em_id, parser);
-        propose_lattice(em_id, parser, parser.proposals_lattice[i]);
-    }
-
-    // // Testing with urb
-    // for (int k = 1;; k = 0)
+    // for (int i = 0; i < parser.message_to_send; i++)
     // {
-    //     for (int m = 1; m <= parser.message_to_send; m++)
-    //     {
-    //         broadcast_urb(em_id, parser, std::to_string(m));
+    //     init_lattice(em_id, parser);
+    //     propose_lattice(em_id, parser, parser.proposals_lattice[i]);
+    //     for (;;) {
+    //         if (!parser.active_lattice) {
+    //             std::this_thread::sleep_for(std::chrono::milliseconds(50));
+    //             break;
+    //         }
     //     }
     // }
+
+    // Testing with urb
+    for (int k = 1;; k = 0)
+    {
+        for (int m = 1; m <= parser.message_to_send; m++)
+        {
+            broadcast_urb(em_id, parser, std::to_string(m));
+        }
+    }
 
     int *result = static_cast<int*>(malloc(sizeof(int)));
     *result = 0;
@@ -42,11 +48,25 @@ void* recv_thread(void* arg)
     return result;
 }
 
+void* ack_thread(void* arg)
+{
+    struct complex_args* args = static_cast<struct complex_args*>(arg);
+    int em_id = args->em_id_;
+    Parser & parser = args->parser_;
+    
+    ackPerfectLinks(em_id, parser);
+
+    int *result = static_cast<int*>(malloc(sizeof(int)));
+    *result = 0;
+    return result;
+}
+
 void thread_run(int em_id, Parser &parser)
 {
-    pthread_t sendThread, recvThread;
+    pthread_t sendThread, recvThread, ackThread;
     void* sendThread_return;
     void* recvThread_return;
+    void* ackThread_return;
 
     // Initialize the mutex for thread synchronization
     pthread_mutex_init(&mutex, nullptr);
@@ -56,15 +76,19 @@ void thread_run(int em_id, Parser &parser)
 
     while (1) {
         pthread_create(&sendThread, nullptr, send_thread, &arg);
-        parser.writeConsole("pthread_create sendThread");
+        // parser.writeConsole("pthread_create sendThread");
 
         pthread_create(&recvThread, nullptr, recv_thread, &arg);
-        parser.writeConsole("pthread_create recvThread");
+
+        pthread_create(&ackThread, nullptr, ack_thread, &arg);
+        // parser.writeConsole("pthread_create recvThread");
 
         // Wait for the threads to finish (you can implement a termination condition)
         pthread_join(sendThread, &sendThread_return);
 
         pthread_join(recvThread, &recvThread_return);
+
+        pthread_join(ackThread, &ackThread_return);
         
         // int result = *(int *)sendThread_return;
     }

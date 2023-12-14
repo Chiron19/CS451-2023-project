@@ -22,6 +22,7 @@
     Lattice Agreement
 */
 
+std::string format_plaintext_lattice(std::set<int> & p);
 std::string format_proposal_buffer_lattice(std::set<int>& p, int k);
 std::string format_ack_buffer_lattice(int k);
 std::string format_nack_buffer_lattice(std::set<int>& p, int k);

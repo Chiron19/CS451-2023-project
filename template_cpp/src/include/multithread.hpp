@@ -27,6 +27,7 @@ struct complex_args {
 
 void* send_thread(void* arg);
 void* recv_thread(void* arg);
+void* ack_thread(void* arg);
 void thread_run(int em_id, Parser &parser);
 
 #endif

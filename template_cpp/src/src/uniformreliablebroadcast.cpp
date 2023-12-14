@@ -79,6 +79,7 @@ void broadcast_urb(int em_id, Parser & parser, std::string buffer)
     parser.pending.insert({em_id, m});
     buffer = buffer + "." + std::to_string(em_id); // Before check pending, buffer should be formated
     // check_pending_urb(em_id, parser, {em_id, buffer}, em_id, m);
+    parser.writeConsole("%d->A %s send_beb m=%d", em_id, buffer.c_str(), m);
     for (auto &host : parser.hosts()) {
         senderPerfectLinks(em_id, static_cast<int>(host.id), parser, buffer);
     }

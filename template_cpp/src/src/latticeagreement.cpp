@@ -1,6 +1,21 @@
 #include "latticeagreement.hpp"
 
 /*
+    format the input to string buffer as "p1 p2 p3 ..." (separated by spaces)
+*/
+std::string format_plaintext_lattice(std::set<int> & p)
+{
+    std::stringstream ss;
+    for (auto it = p.begin(); it != p.end(); ++it) {
+        if (it != p.begin()) {
+            ss << " ";
+        }
+        ss << *it;
+    }
+    return ss.str();
+}
+
+/*
     format the input to string buffer as "Pp1,p2,p3/k"
 */
 std::string format_proposal_buffer_lattice(std::set<int> & p, int k)
@@ -125,7 +140,9 @@ void propose_lattice(int em_id, Parser & parser, std::set<int> & proposal_set)
     parser.active_proposal_number_lattice ++;
     parser.ack_count_lattice = parser.nack_count_lattice = 0;
 
+    // trigger beb.broadcast(<PROP, prop_val_i, active_prop_num_i>)
     std::string buffer = format_proposal_buffer_lattice(proposal_set, parser.active_proposal_number_lattice);
+    parser.writeConsole("%s PROP", format_plaintext_lattice(parser.proposed_value_lattice).c_str());
     for (auto &host : parser.hosts()) {
         senderPerfectLinks(em_id, static_cast<int>(host.id), parser, buffer);
     }
@@ -133,12 +150,10 @@ void propose_lattice(int em_id, Parser & parser, std::set<int> & proposal_set)
 
 void decide_lattice(int em_id, Parser & parser)
 {
-    std::string res;
-    for (auto it : parser.proposed_value_lattice) {
-       res = res + std::to_string(it) + " ";
-    }
+    std::string res = format_plaintext_lattice(parser.proposed_value_lattice);
     
     parser.writeOutputFile(res.c_str());
+    parser.writeConsole("%s DECI", res.c_str());
 }
 
 void upon_event_deliver_beb_lattice(int em_id, Parser & parser, message_t mes)
@@ -173,11 +188,15 @@ void upon_event_recv_prop_lattice(int em_id, Parser & parser, std::set<int> & pr
 {
     if (isSubset(parser.accepted_value_lattice, prop_val)) {
         parser.accepted_value_lattice = prop_val;
+
+        // send <ACK, prop_num> to p_j
         std::string buffer = format_ack_buffer_lattice(prop_num);
         senderPerfectLinks(em_id, sender_id, parser, buffer);
     }
     else {
         parser.accepted_value_lattice = setUnion(parser.accepted_value_lattice, prop_val);
+
+        // send <NACK, accept_val, prop_num> to p_j
         std::string buffer = format_nack_buffer_lattice(parser.accepted_value_lattice, prop_num);
         senderPerfectLinks(em_id, sender_id, parser, buffer);
     }
@@ -197,6 +216,7 @@ void check_nack_count_lattice(int em_id, Parser & parser)
         parser.active_proposal_number_lattice ++;
         parser.ack_count_lattice = parser.nack_count_lattice = 0;
 
+        // trigger beb.broadcast(<PROP, prop_val_i, active_prop_num_i>)
         std::string buffer = format_proposal_buffer_lattice(parser.proposed_value_lattice, parser.active_proposal_number_lattice);
         for (auto &host : parser.hosts()) {
             senderPerfectLinks(em_id, static_cast<int>(host.id), parser, buffer);
