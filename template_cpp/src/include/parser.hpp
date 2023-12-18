@@ -5,6 +5,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <queue>
 #include <set>
 #include <map>
 
@@ -148,7 +149,7 @@ public:
 
   int message_to_send, recv_em_id;
   std::set<message_t> not_delivered_pl; // dst_id, message_buffer
-  std::vector<message_t> ack_queue_pl; 
+  std::queue<message_t> ack_queue_pl; 
 
   /*
     Perfect Links application configuration
@@ -205,9 +206,12 @@ public:
   /* variable for lattice agreement */
   bool active_lattice;
   int ack_count_lattice, nack_count_lattice, active_proposal_number_lattice;
-  std::set<int> proposed_value_lattice, accepted_value_lattice;
-  int vs, ds, current_slot;
+  std::set<int> proposed_value_lattice;
+  std::set<int> accepted_value_lattice;
+  int vs, ds;
   std::vector<std::set<int>> proposals_lattice; // proposals_lattice[k]: a set of int in k-th proposal
+  std::set<int> fin_lattice; // a set of finished process id
+  int round_num = 0;
 
   /*
     Lattice Agreement application configuration
@@ -240,11 +244,9 @@ public:
       return false;
     }
 
-    current_slot = 0;
-
-    // for (int i = 0; i < message_to_send; i++) {
-    //     std::cout << "parser.proposals_lattice[" << i << "].size = " << proposals_lattice[i].size() << std::endl;
-    // }
+    for (int i = 0; i < message_to_send; i++) {
+        std::cout << "parser.proposals_lattice[" << i << "].size()= " << proposals_lattice[i].size() << std::endl;
+    }
     
     return true;
   }

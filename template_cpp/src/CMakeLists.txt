@@ -4,6 +4,8 @@
 include_directories(include)
 set(SOURCES src/main.cpp src/hello.c src/perfectlink.cpp src/uniformreliablebroadcast.cpp src/fifobroadcast.cpp src/multithread.cpp src/latticeagreement.cpp)
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
+
 # DO NOT EDIT THE FOLLOWING LINES
 find_package(Threads)
 add_executable(da_proc ${SOURCES})

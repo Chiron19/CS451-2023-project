@@ -50,7 +50,7 @@ bool verifySubsetValidity(const std::vector<std::vector<std::set<int>>>& proposa
 bool verifyJointProposals(const std::vector<std::vector<std::set<int>>>& proposals, const std::vector<std::vector<std::set<int>>>& decisions) {
     bool res = true;
     for (size_t i = 0; i < p; ++i) {
-        std::set<int> jointProposals;
+        std::set<int> jointProposals = {};
         // Combine all proposals from different processes into jointProposals
         for (size_t j = 0; j < n; ++j) {
             jointProposals.insert(proposals[j][i].begin(), proposals[j][i].end());
@@ -103,6 +103,8 @@ bool readConfigAndOutput(const std::string& configPath, const std::string& outpu
     }
 
     config >> p >> vs >> ds;
+    std::string tmp;
+    std::getline(config, tmp); // Consume newline
 
     proposals.resize(p);
     decisions.resize(p);
@@ -110,7 +112,6 @@ bool readConfigAndOutput(const std::string& configPath, const std::string& outpu
     // Read proposals from config file
     for (int i = 0; i < p; ++i) {
         std::string line;
-        std::getline(config, line); // Consume newline
         std::getline(config, line);
 
         std::stringstream ss(line);

@@ -33,7 +33,7 @@ void receiverPerfectLinks(int em_id, Parser &parser);
 
 void senderPerfectLinks(int src_em_id, int dst_em_id, Parser &parser, std::string & buffer);
 
-void ackPerfectLinks(int em_id, Parser & parser);
+void resendPerfectLinks(int em_id, Parser & parser);
 
 #endif
 #endif
