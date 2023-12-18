@@ -177,8 +177,8 @@ void init_lattice(int em_id, Parser & parser)
     pthread_mutex_lock(&mutex);
     /* for proposer */
     parser.active_lattice = false;
-    parser.ack_count_lattice = 0;
-    parser.nack_count_lattice = 0;
+    parser.ack_count_lattice.clear();
+    parser.nack_count_lattice.clear();
     parser.active_proposal_number_lattice = 0;
     parser.proposed_value_lattice.clear();
 
@@ -195,7 +195,8 @@ void propose_lattice(int em_id, Parser & parser, std::set<int> & proposal_set)
     parser.proposed_value_lattice = proposal_set;
     parser.active_lattice = true;
     parser.active_proposal_number_lattice ++;
-    parser.ack_count_lattice = parser.nack_count_lattice = 0;
+    parser.ack_count_lattice.clear();
+    parser.nack_count_lattice.clear();
 
     // trigger beb.broadcast(<PROP, prop_val_i, active_prop_num_i>)
     std::string buffer = format_proposal_buffer_lattice(proposal_set, parser.active_proposal_number_lattice);
@@ -227,8 +228,8 @@ void upon_event_deliver_beb_lattice(int em_id, Parser & parser, message_t mes)
     char type = std::get<0>(res);
     try {
         if (type == 'P') { upon_event_recv_prop_lattice(em_id, parser, std::get<1>(res), std::get<2>(res), mes.first, r); }
-        else if (type == 'A') { upon_event_recv_ack_lattice(em_id, parser, std::get<2>(res), r); }
-        else if (type == 'N') { upon_event_recv_nack_lattice(em_id, parser, std::get<1>(res), std::get<2>(res), r); }
+        else if (type == 'A') { upon_event_recv_ack_lattice(em_id, parser, std::get<2>(res), mes.first, r); }
+        else if (type == 'N') { upon_event_recv_nack_lattice(em_id, parser, std::get<1>(res), std::get<2>(res), mes.first, r); }
         else if (type == 'F') { upon_event_recv_fin_lattice(em_id, parser, std::get<1>(res), std::get<2>(res)); }
     } catch (const std::exception& e) {
         pthread_mutex_unlock(&mutex);
@@ -248,11 +249,11 @@ void upon_event_recv_fin_lattice(int em_id, Parser & parser, std::set<int> & val
     }
 }
 
-void upon_event_recv_ack_lattice(int em_id, Parser & parser, int prop_num, int current_round)
+void upon_event_recv_ack_lattice(int em_id, Parser & parser, int prop_num, int sender_id, int current_round)
 {
     if (current_round != parser.round_num) throw std::runtime_error("");
     if (prop_num == parser.active_proposal_number_lattice) {
-        parser.ack_count_lattice ++;
+        parser.ack_count_lattice.insert(sender_id);
         
         try {
             check_ack_count_lattice(em_id, parser, current_round);
@@ -263,12 +264,14 @@ void upon_event_recv_ack_lattice(int em_id, Parser & parser, int prop_num, int c
     }
 }
 
-void upon_event_recv_nack_lattice(int em_id, Parser & parser, std::set<int> & val, int prop_num, int current_round)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wstrict-overflow"
+void upon_event_recv_nack_lattice(int em_id, Parser & parser, std::set<int> & val, int prop_num, int sender_id, int current_round)
 {
     if (current_round != parser.round_num) throw std::runtime_error("");
     if (prop_num == parser.active_proposal_number_lattice) {
         parser.proposed_value_lattice = setUnion(parser.proposed_value_lattice, val);
-        parser.nack_count_lattice ++;
+        parser.nack_count_lattice.insert(sender_id);
 
         try {
             check_nack_count_lattice(em_id, parser, current_round);
@@ -278,6 +281,7 @@ void upon_event_recv_nack_lattice(int em_id, Parser & parser, std::set<int> & va
         
     }
 }
+#pragma GCC diagnostic pop
 
 void upon_event_recv_prop_lattice(int em_id, Parser & parser, std::set<int> & prop_val, int prop_num, int sender_id, int current_round)
 {
@@ -307,7 +311,7 @@ void upon_event_recv_prop_lattice(int em_id, Parser & parser, std::set<int> & pr
 void check_ack_count_lattice(int em_id, Parser & parser, int current_round)
 {
     if (current_round != parser.round_num) throw std::runtime_error("");
-    if ((parser.ack_count_lattice > static_cast<int>(parser.hosts().size() / 2)) && parser.active_lattice) {
+    if ((parser.ack_count_lattice.size() > parser.hosts().size() / 2) && parser.active_lattice) {
         decide_lattice(em_id, parser);
         parser.active_lattice = false;
     }
@@ -316,9 +320,10 @@ void check_ack_count_lattice(int em_id, Parser & parser, int current_round)
 void check_nack_count_lattice(int em_id, Parser & parser, int current_round)
 {
     if (current_round != parser.round_num) throw std::runtime_error("");
-    if (parser.nack_count_lattice > 0 && (parser.ack_count_lattice + parser.nack_count_lattice > static_cast<int>(parser.hosts().size() / 2)) && parser.active_lattice) {
+    if (parser.nack_count_lattice.size() && (parser.ack_count_lattice.size() + parser.nack_count_lattice.size() > parser.hosts().size() / 2) && parser.active_lattice) {
         parser.active_proposal_number_lattice ++;
-        parser.ack_count_lattice = parser.nack_count_lattice = 0;
+        parser.ack_count_lattice.clear();
+        parser.nack_count_lattice.clear();
 
         // trigger beb.broadcast(<PROP, prop_val_i, active_prop_num_i>)
         std::string buffer = format_proposal_buffer_lattice(parser.proposed_value_lattice, parser.active_proposal_number_lattice);

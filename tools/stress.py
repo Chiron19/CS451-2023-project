@@ -493,8 +493,8 @@ if __name__ == "__main__":
         "concurrency": 8,  # How many threads are interferring with the running processes
         "attempts": 8,  # How many interferring attempts each threads does
         "attemptsDistribution": {  # Probability with which an interferring thread will
-            "STOP": 0.20,  # select an interferring action (make sure they add up to 1)
-            "CONT": 0.80,
+            "STOP": 0.40,  # select an interferring action (make sure they add up to 1)
+            "CONT": 0.60,
             "TERM": 0.00,
         },
     }

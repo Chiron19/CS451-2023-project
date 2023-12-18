@@ -205,7 +205,9 @@ public:
 
   /* variable for lattice agreement */
   bool active_lattice;
-  int ack_count_lattice, nack_count_lattice, active_proposal_number_lattice;
+  int active_proposal_number_lattice;
+  std::set<int> ack_count_lattice;
+  std::set<int> nack_count_lattice; 
   std::set<int> proposed_value_lattice;
   std::set<int> accepted_value_lattice;
   int vs, ds;

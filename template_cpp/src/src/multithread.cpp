@@ -9,9 +9,10 @@ void* send_thread(void* arg)
     int em_id = args->em_id_;
     Parser & parser = args->parser_;
     
+    std::cout << "====================== round_num " << parser.round_num << std::endl;
     std::cout << "parser.active_lattice " << parser.active_lattice << std::endl;
-    std::cout << "parser.ack_count_lattice " << parser.ack_count_lattice << std::endl;
-    std::cout << "parser.nack_count_lattice " << parser.nack_count_lattice << std::endl;
+    std::cout << "parser.ack_count_lattice " << parser.ack_count_lattice.size() << std::endl;
+    std::cout << "parser.nack_count_lattice " << parser.nack_count_lattice.size() << std::endl;
     std::cout << "parser.active_proposal_number_lattice " << parser.active_proposal_number_lattice << std::endl;
     std::cout << "parser.proposed_value_lattice " << parser.proposed_value_lattice.size() << std::endl;
 
@@ -19,17 +20,15 @@ void* send_thread(void* arg)
     std::cout << "parser.accepted_value_lattice " << parser.accepted_value_lattice.size() << std::endl;
 
     /* for each round */
-    std::cout << "parser.fin_lattice " << parser.fin_lattice.size() << std::endl;
-
-    std::cout << "parser.round_num " << parser.round_num << std::endl;      
+    std::cout << "parser.fin_lattice " << parser.fin_lattice.size() << std::endl;      
 
         // propose once, wait until decided
         propose_lattice(em_id, parser, parser.proposals_lattice[parser.round_num]);
         do {
-            std::this_thread::sleep_for(std::chrono::milliseconds(100)); 
+            std::this_thread::sleep_for(std::chrono::milliseconds(50)); 
         } while (parser.active_lattice);
 
-        // broadcast finish message, wait until majority finish
+        // broadcast finish message
         std::string buf = format_finish_lattice(parser.round_num, em_id);
         format_round_wrapper_lattice(buf, parser.round_num);
         for (auto &host : parser.hosts()) {
@@ -82,7 +81,7 @@ void* rese_thread(void* arg)
     for (;;)
     {
         resendPerfectLinks(em_id, parser);
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
         if (parser.fin_lattice.size() > parser.hosts().size() / 2) break;
         // initPerfectLink(em_id, parser);
     }

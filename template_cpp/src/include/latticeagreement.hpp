@@ -42,8 +42,8 @@ void decide_lattice(int em_id, Parser& parser);
 
 void upon_event_deliver_beb_lattice(int em_id, Parser& parser, message_t mes);
 void upon_event_recv_fin_lattice(int em_id, Parser & parser, std::set<int>& val, int fin_em_id);
-void upon_event_recv_ack_lattice(int em_id, Parser& parser, int prop_num, int current_round);
-void upon_event_recv_nack_lattice(int em_id, Parser& parser, std::set<int>& val, int prop_num, int current_round);
+void upon_event_recv_ack_lattice(int em_id, Parser& parser, int prop_num, int sender_id, int current_round);
+void upon_event_recv_nack_lattice(int em_id, Parser& parser, std::set<int>& val, int prop_num, int sender_id, int current_round);
 void upon_event_recv_prop_lattice(int em_id, Parser& parser, std::set<int>& prop_val, int prop_num, int sender_id, int current_round);
 
 void check_ack_count_lattice(int em_id, Parser& parser, int current_round);
